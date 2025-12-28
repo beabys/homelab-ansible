@@ -1,0 +1,31 @@
+---
+# Update and upgrade packages for common package managers
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_facts['pkg_mgr'] == 'apt'
+
+- name: Upgrade apt packages (dist)
+  apt:
+    upgrade: dist
+    autoremove: yes
+  when: ansible_facts['pkg_mgr'] == 'apt'
+
+- name: Upgrade packages with dnf
+  dnf:
+    name: '*'
+    state: latest
+  when: ansible_facts['pkg_mgr'] == 'dnf'
+
+- name: Upgrade packages with yum
+  yum:
+    name: '*'
+    state: latest
+  when: ansible_facts['pkg_mgr'] == 'yum'
+
+- name: Unsupported package manager (no-op)
+  debug:
+    msg: "Package manager {{ ansible_facts['pkg_mgr'] }} not explicitly supported; skipping."
+  when: ansible_facts['pkg_mgr'] not in ['apt','dnf','yum']

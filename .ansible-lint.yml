@@ -1,0 +1,12 @@
+---
+# ansible-lint configuration for homelab-ansible
+# See https://ansible-lint.readthedocs.io/ for config options
+
+skip_list: []
+
+exclude_paths:
+  - .git
+  - vars/secrets.yml
+
+# Warn on rules instead of failing where appropriate
+verbosity: 0

@@ -1,0 +1,49 @@
+---
+- name: Build dynamic inventory from vars/secrets.yml
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../vars/secrets.yml
+  tasks:
+    - name: Ensure secrets file is present
+      stat:
+        path: "{{ playbook_dir }}/../vars/secrets.yml"
+      register: secrets_stat
+      failed_when: secrets_stat.stat.exists == false
+
+    - name: Load secrets explicitly
+      include_vars:
+        file: "{{ playbook_dir }}/../vars/secrets.yml"
+
+    - name: Add managed hosts (private_key)
+      add_host:
+        name: "{{ item.name }}"
+        groups: homelab
+        ansible_host: "{{ item.ip }}"
+        ansible_port: "{{ item.port | default(22) }}"
+        ansible_user: "{{ item.ssh_user | default('root') }}"
+        ansible_python_interpreter: "{{ item.python_interpreter | default('/usr/bin/python3') }}"
+        ansible_ssh_private_key_file: "{{ item.ssh_auth.private_key }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+      loop: "{{ servers }}"
+      when: item.ssh_auth is defined and item.ssh_auth.type == 'private_key'
+
+    - name: Add managed hosts (password)
+      add_host:
+        name: "{{ item.name }}"
+        groups: homelab
+        ansible_host: "{{ item.ip }}"
+        ansible_port: "{{ item.port | default(22) }}"
+        ansible_user: "{{ item.ssh_user | default('root') }}"
+        ansible_python_interpreter: "{{ item.python_interpreter | default('/usr/bin/python3') }}"
+        ansible_ssh_pass: "{{ item.ssh_auth.password }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+      loop: "{{ servers }}"
+      when: item.ssh_auth is defined and item.ssh_auth.type == 'password'
+
+- name: Run update/upgrade on managed hosts
+  hosts: homelab
+  become: true
+  gather_facts: true
+  roles:
+    - update
