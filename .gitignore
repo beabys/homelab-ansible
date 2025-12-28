@@ -1,0 +1,21 @@
+# Ignore secrets
+vars/secrets.yml
+vars/lxc_containers.yml
+
+# Python/IDE/etc common ignores
+.pytest_cache/
+__pycache__/
+.vscode/
+# Sensitive variable file
+vars/secrets.yml
+
+# Ansible and local
+*.retry
+.vagrant/
+.vault_pass.txt
+
+# Editor
+.DS_Store
+
+# ansible
+.ansible/
