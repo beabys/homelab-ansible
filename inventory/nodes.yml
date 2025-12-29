@@ -7,6 +7,3 @@ local:
 
 nodes:
 # dynamic hosts will be added at runtime by playbooks/nodes_update.yml via add_host
-
-lxc_hosts:
-# dynamic hosts will be added at runtime by playbooks/lxc_update.yml via add_host
