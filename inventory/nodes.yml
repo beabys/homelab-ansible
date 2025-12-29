@@ -1,0 +1,12 @@
+local:
+  hosts:
+    localhost: {}
+  vars:
+    ansible_connection: local
+    ansible_python_interpreter: /usr/bin/python3
+
+nodes:
+# dynamic hosts will be added at runtime by playbooks/nodes_update.yml via add_host
+
+lxc_hosts:
+# dynamic hosts will be added at runtime by playbooks/lxc_update.yml via add_host

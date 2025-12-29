@@ -18,7 +18,7 @@
     - name: Add managed hosts (private_key)
       add_host:
         name: "{{ item.name }}"
-        groups: homelab
+        groups: nodes
         ansible_host: "{{ item.ip }}"
         ansible_port: "{{ item.port | default(22) }}"
         ansible_user: "{{ item.ssh_user | default('root') }}"
@@ -31,7 +31,7 @@
     - name: Add managed hosts (password)
       add_host:
         name: "{{ item.name }}"
-        groups: homelab
+        groups: nodes
         ansible_host: "{{ item.ip }}"
         ansible_port: "{{ item.port | default(22) }}"
         ansible_user: "{{ item.ssh_user | default('root') }}"
@@ -42,8 +42,8 @@
       when: item.ssh_auth is defined and item.ssh_auth.type == 'password'
 
 - name: Run update/upgrade on managed hosts
-  hosts: homelab
+  hosts: nodes
   become: true
   gather_facts: true
   roles:
-    - update
+    - update_node
