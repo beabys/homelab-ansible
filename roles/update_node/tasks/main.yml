@@ -4,6 +4,7 @@
 - name: Update apt cache
   apt:
     update_cache: yes
+    force_apt_get: yes
     cache_valid_time: 3600
   when: ansible_facts['pkg_mgr'] == 'apt'
 
@@ -11,6 +12,8 @@
   apt:
     upgrade: dist
     autoremove: yes
+    autoclean: yes
+    clean: yes
   when: ansible_facts['pkg_mgr'] == 'apt'
 
 - name: Upgrade packages with dnf
@@ -29,3 +32,20 @@
   debug:
     msg: "Package manager {{ ansible_facts['pkg_mgr'] }} not explicitly supported; skipping."
   when: ansible_facts['pkg_mgr'] not in ['apt','dnf','yum']
+
+- name: check for reboot required
+  register: reboot_required_file
+  stat:
+    path: /var/run/reboot-required
+    get_checksum: false
+  when: ansible_facts['pkg_mgr'] == 'apt'
+
+- name: Reboot if kernel updated
+  reboot:
+    msg: "Reboot initiated by Ansible for kernel updates"
+    connect_timeout: 5
+    reboot_timeout: 300
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime 
+  when: reboot_required_file.stat.exists

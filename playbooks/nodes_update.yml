@@ -24,6 +24,7 @@
         ansible_user: "{{ item.ssh_user | default('root') }}"
         ansible_python_interpreter: "{{ item.python_interpreter | default('/usr/bin/python3') }}"
         ansible_ssh_private_key_file: "{{ item.ssh_auth.private_key }}"
+        ansible_become_pass: "{{ item.become_pass | default(omit) }}"
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
       loop: "{{ servers }}"
       when: item.ssh_auth is defined and item.ssh_auth.type == 'private_key'
@@ -37,6 +38,7 @@
         ansible_user: "{{ item.ssh_user | default('root') }}"
         ansible_python_interpreter: "{{ item.python_interpreter | default('/usr/bin/python3') }}"
         ansible_ssh_pass: "{{ item.ssh_auth.password }}"
+        ansible_become_pass: "{{ item.become_pass | default(omit) }}"
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
       loop: "{{ servers }}"
       when: item.ssh_auth is defined and item.ssh_auth.type == 'password'
